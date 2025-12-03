@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test API</title>
+</head>
+<body>
+    <h1>Test Loading JS Files</h1>
+    <div id="result"></div>
+
+    <script src="config.js"></script>
+    <script src="api.js"></script>
+    <script>
+        document.getElementById('result').innerHTML = `
+            <p>CONFIG loaded: ${typeof CONFIG !== 'undefined' ? '✅ YES' : '❌ NO'}</p>
+            <p>API loaded: ${typeof API !== 'undefined' ? '✅ YES' : '❌ NO'}</p>
+            <p>auth loaded: ${typeof auth !== 'undefined' ? '✅ YES' : '❌ NO'}</p>
+        `;
+        
+        console.log('CONFIG:', CONFIG);
+        console.log('API:', API);
+        console.log('auth:', auth);
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Approval System</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Additional styles for multi-level approval */
+        .approval-progress {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        
+        .approval-step {
+            flex: 1;
+            min-width: 150px;
+            padding: 15px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .approval-step.active {
+            border-color: #2196F3;
+            box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
+        }
+        
+        .approval-step.approved {
+            border-color: #4CAF50;
+            background: #f1f8f4;
+        }
+        
+        .approval-step.rejected {
+            border-color: #f44336;
+            background: #fef1f0;
+        }
+        
+        .step-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            background: #e0e0e0;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        
+        .approval-step.approved .step-number {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .approval-step.rejected .step-number {
+            background: #f44336;
+            color: white;
+        }
+        
+        .step-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .step-status {
+            margin: 8px 0;
+        }
+        
+        .step-approver, .step-date {
+            font-size: 11px;
+            color: #666;
+            margin-top: 4px;
+        }
+        
+        .step-arrow {
+            font-size: 20px;
+            color: #999;
+            flex-shrink: 0;
+        }
+        
+        .badge-level {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .leader-level {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        .spv-level {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+        
+        .manager-level {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+        
+        .completed-level {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .badge.spv {
+            background: #ff9800;
+            color: white;
+        }
+        
+        .badge.manager {
+            background: #9c27b0;
+            color: white;
+        }
+        
+        .current-level-info {
+            padding: 10px;
+            background: #fff9e6;
+            border-left: 4px solid #ffc107;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <h2>Approval System</h2>
+            <div class="nav-menu">
+                <span id="userName">Loading...</span>
+                <span id="userRole" class="badge"></span>
+                <button class="btn btn-secondary" id="logoutBtn">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>Dashboard</h1>
+            <div class="action-buttons">
+                <button class="btn btn-primary" id="btnNewRequest">New Request</button>
+                <button class="btn btn-secondary" id="btnMasterData">Master Data</button>
+            </div>
+        </div>
+
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+                <h3>Total Requests</h3>
+                <p class="stat-number" id="totalRequests">0</p>
+            </div>
+            <div class="stat-card pending">
+                <h3>Pending</h3>
+                <p class="stat-number" id="pendingRequests">0</p>
+            </div>
+            <div class="stat-card approved">
+                <h3>Approved</h3>
+                <p class="stat-number" id="approvedRequests">0</p>
+            </div>
+            <div class="stat-card rejected">
+                <h3>Rejected</h3>
+                <p class="stat-number" id="rejectedRequests">0</p>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <h2>All Requests</h2>
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-status="all">All</button>
+                <button class="filter-btn" data-status="pending">Pending</button>
+                <button class="filter-btn" data-status="approved">Approved</button>
+                <button class="filter-btn" data-status="rejected">Rejected</button>
+            </div>
+            <table id="requestsTable">
+                <thead>
+                    <tr>
+                        <th class="sortable" data-column="id">ID</th>
+                        <th class="sortable" data-column="title">Title</th>
+                        <th class="sortable" data-column="item">Item</th>
+                        <th class="sortable" data-column="quantity">Qty</th>
+                        <th class="sortable" data-column="user">Requestor</th>
+                        <th>Approval Level</th>
+                        <th class="sortable" data-column="status">Status</th>
+                        <th class="sortable" data-column="created_at">Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="requestsTableBody">
+                    <tr>
+                        <td colspan="9" class="loading">Loading...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal for Request Form -->
+    <div id="requestModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Create New Request</h2>
+            <form id="requestForm">
+                <div class="form-group">
+                    <label for="requestTitle">Title*</label>
+                    <input type="text" id="requestTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="requestItem">Item*</label>
+                    <select id="requestItem" required>
+                        <option value="">Select Item</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="requestQuantity">Quantity*</label>
+                    <input type="number" id="requestQuantity" min="1" value="1" required>
+                </div>
+                <div class="form-group">
+                    <label for="requestDescription">Description</label>
+                    <textarea id="requestDescription" rows="4"></textarea>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn btn-secondary" id="btnCancelRequest">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Submit Request</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Request Detail -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <span class="close">&times;</span>
+            <h2>Request Detail</h2>
+            <div id="requestDetail">
+                <p>Loading...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Approval/Rejection -->
+    <div id="approvalModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="approvalTitle">Approve Request</h2>
+            <div id="approvalContent">
+                <p id="approvalMessage">Are you sure you want to approve this request?</p>
+                <div class="form-group" id="rejectionReasonGroup" style="display: none;">
+                    <label for="rejectionReason">Rejection Reason*</label>
+                    <textarea id="rejectionReason" rows="3"></textarea>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn btn-secondary" id="btnCancelApproval">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="btnConfirmAction">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="api.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+</html>

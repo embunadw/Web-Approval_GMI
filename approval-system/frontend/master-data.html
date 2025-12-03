@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master Data - Approval System</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Sortable table styles */
+        .sortable {
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+            padding-right: 25px !important;
+        }
+        
+        .sortable:hover {
+            background-color: #e9ecef;
+        }
+        
+        .sortable::after {
+            content: '⇅';
+            position: absolute;
+            right: 8px;
+            opacity: 0.3;
+            font-size: 12px;
+        }
+        
+        .sortable.asc::after {
+            content: '▲';
+            opacity: 1;
+            color: #667eea;
+        }
+        
+        .sortable.desc::after {
+            content: '▼';
+            opacity: 1;
+            color: #667eea;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding: 15px 0;
+            border-top: 1px solid #dee2e6;
+        }
+        
+        .pagination-info {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .pagination-buttons {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .pagination-buttons button {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            background: white;
+            cursor: pointer;
+            border-radius: 3px;
+            font-size: 14px;
+        }
+        
+        .pagination-buttons button:hover:not(:disabled) {
+            background: #f8f9fa;
+            border-color: #667eea;
+        }
+        
+        .pagination-buttons button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .pagination-buttons button.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .entries-select {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .entries-select select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <h2>Approval System</h2>
+            <div class="nav-menu">
+                <button class="btn btn-secondary" onclick="window.location.href='dashboard.html'">Back to Dashboard</button>
+                <button class="btn btn-secondary" id="logoutBtn">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>Master Data - Items</h1>
+            <div class="action-buttons">
+                <button class="btn btn-primary" id="btnImportExcel">Import Excel</button>
+                <button class="btn btn-primary" id="btnAddItem">Add New Item</button>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <div class="entries-select">
+                <label>Show</label>
+                <select id="entriesPerPage">
+                    <option value="10">10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                    <option value="all">All</option>
+                </select>
+                <label>entries</label>
+            </div>
+            
+            <input type="text" id="searchInput" placeholder="Search items..." class="search-input">
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th class="sortable" data-column="item_code">Item Code</th>
+                        <th class="sortable" data-column="item_name">Item Name</th>
+                        <th class="sortable" data-column="category">Category</th>
+                        <th class="sortable" data-column="description">Description</th>
+                        <th class="sortable" data-column="created_at">Created At</th>
+                    </tr>
+                </thead>
+                <tbody id="itemsTableBody">
+                    <tr>
+                        <td colspan="5" class="loading">Loading...</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="pagination">
+                <div class="pagination-info" id="paginationInfo">
+                    Showing 0 to 0 of 0 entries
+                </div>
+                <div class="pagination-buttons" id="paginationButtons">
+                    <!-- Buttons will be generated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Add Item -->
+    <div id="itemModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Add New Item</h2>
+            <form id="itemForm">
+                <div class="form-group">
+                    <label for="itemCode">Item Code*</label>
+                    <input type="text" id="itemCode" required>
+                </div>
+                <div class="form-group">
+                    <label for="itemName">Item Name*</label>
+                    <input type="text" id="itemName" required>
+                </div>
+                <div class="form-group">
+                    <label for="itemCategory">Category</label>
+                    <input type="text" id="itemCategory">
+                </div>
+                <div class="form-group">
+                    <label for="itemDescription">Description</label>
+                    <textarea id="itemDescription" rows="3"></textarea>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn btn-secondary" id="btnCancelItem">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Item</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Import Excel -->
+    <div id="importModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Import Excel</h2>
+            <div class="import-info">
+                <p><strong>Excel Format Required:</strong></p>
+                <p>Headers: item_code | item_name | category | description</p>
+                <p>Supported formats: .xlsx, .xls, .csv</p>
+            </div>
+            <form id="importForm">
+                <div class="form-group">
+                    <label for="excelFile">Select Excel File*</label>
+                    <input type="file" id="excelFile" accept=".xlsx,.xls,.csv" required>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn btn-secondary" id="btnCancelImport">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Import</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="api.js"></script>
+    <script src="master-data.js"></script>
+</body>
+</html>
