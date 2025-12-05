@@ -6,9 +6,9 @@ const CONFIG = {
     USER_KEY: 'user_data'
 };
 
-console.log('Config loaded:', CONFIG);
+console.log(' Config loaded:', CONFIG);
 
-// Fungsi Helper 
+// Helper functions
 const storage = {
     set: (key, value) => {
         localStorage.setItem(key, JSON.stringify(value));
@@ -36,7 +36,7 @@ const auth = {
     },
     isAuthenticated: () => !!auth.getToken(),
     
-    // UPDATED: Role check fungsi
+    // UPDATED: Role checking functions
     isUser: () => {
         const user = auth.getUser();
         return user && user.role === 'user';
@@ -45,9 +45,9 @@ const auth = {
         const user = auth.getUser();
         return user && user.role === 'leader';
     },
-    isspv: () => {
+    isSPV: () => {
         const user = auth.getUser();
-        return user && user.role === 'spv';
+        return user && user.role === 'SPV';
     },
     isManager: () => {
         const user = auth.getUser();
@@ -121,7 +121,7 @@ const getRoleBadge = (role) => {
     const badges = {
         user: '<span class="badge user">User</span>',
         leader: '<span class="badge leader">Leader</span>',
-        spv: '<span class="badge spv">SPV</span>',
+        SPV: '<span class="badge SPV">SPV</span>',
         manager: '<span class="badge manager">Manager</span>'
     };
     return badges[role] || role;
@@ -130,15 +130,15 @@ const getRoleBadge = (role) => {
 // NEW: Get approval level badge
 const getApprovalLevelBadge = (level) => {
     const badges = {
-        leader: '<span class="badge-level leader-level">Leader Review</span>',
-        spv: '<span class="badge-level spv-level">spv Review</span>',
-        manager: '<span class="badge-level manager-level">Manager Review</span>',
-        completed: '<span class="badge-level completed-level">Completed</span>'
+        leader: '<span class="badge-level leader-level">📋 Leader Review</span>',
+        SPV: '<span class="badge-level SPV-level">📊 SPV Review</span>',
+        manager: '<span class="badge-level manager-level">✅ Manager Review</span>',
+        completed: '<span class="badge-level completed-level">✓ Completed</span>'
     };
     return badges[level] || level;
 };
 
-
+// NEW: Get approval timeline/progress
 const getApprovalProgress = (request) => {
     const steps = [
         {
@@ -148,10 +148,10 @@ const getApprovalProgress = (request) => {
             date: request.leader_approved_at
         },
         {
-            name: 'spv',
-            status: request.spv_status || 'pending',
-            approver: request.spv_approver?.name,
-            date: request.spv_approved_at
+            name: 'SPV',
+            status: request.SPV_status || 'pending',
+            approver: request.SPV_approver?.name,
+            date: request.SPV_approved_at
         },
         {
             name: 'Manager',
@@ -199,7 +199,7 @@ const getApprovalProgress = (request) => {
     return html;
 };
 
-// NEW: cek kalo user bisa approve request
+// Check if user can approve request
 const canApproveRequest = (request) => {
     const user = auth.getUser();
     if (!user) return false;
@@ -208,10 +208,10 @@ const canApproveRequest = (request) => {
     const currentLevel = request.current_approval_level;
 
     if (role === 'leader' && currentLevel === 'leader') return true;
-    if (role === 'spv' && currentLevel === 'spv') return true;
+    if (role === 'SPV' && currentLevel === 'SPV') return true;
     if (role === 'manager' && currentLevel === 'manager') return true;
 
     return false;
 };
 
-console.log('All config functions loaded (Multi-level support)');
+console.log(' All config functions loaded (Multi-level support)');

@@ -34,10 +34,10 @@ class User extends Authenticatable
         return $this->hasMany(Request::class, 'leader_approved_by');
     }
 
-    // Relasi request yang di-approve sebagai spv
-    public function spvApprovedRequests()
+    // Relasi request yang di-approve sebagai SPV
+    public function SPVApprovedRequests()
     {
-        return $this->hasMany(Request::class, 'spv_approved_by');
+        return $this->hasMany(Request::class, 'SPV_approved_by');
     }
 
     // Relasi request yang di-approve sebagai Manager
@@ -57,9 +57,9 @@ class User extends Authenticatable
         return $this->role === 'leader';
     }
 
-    public function isspv()
+    public function isSPV()
     {
-        return $this->role === 'spv';
+        return $this->role === 'SPV';
     }
 
     public function isManager()
@@ -72,7 +72,7 @@ class User extends Authenticatable
     {
         $levels = [
             'leader' => $this->isLeader(),
-            'spv' => $this->isspv(),
+            'SPV' => $this->isSPV(),
             'manager' => $this->isManager(),
         ];
 

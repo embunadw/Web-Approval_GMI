@@ -14,7 +14,7 @@ class RequestController extends Controller
             'user', 
             'item', 
             'leaderApprover', 
-            'spvApprover', 
+            'SPVApprover', 
             'managerApprover'
         ]);
 
@@ -34,15 +34,15 @@ class RequestController extends Controller
             $query->where(function($q) use ($user) {
                 $q->where(function($subQ) {
                     $subQ->where('leader_status', 'approved')
-                         ->where('spv_status', 'pending');
-                })->orWhere('spv_approved_by', $user->id);
+                         ->where('SPV_status', 'pending');
+                })->orWhere('SPV_approved_by', $user->id);
             });
         } elseif ($user->isManager()) {
             // Manager bisa lihat request yang sudah di-approve SPV
             $query->where(function($q) use ($user) {
                 $q->where(function($subQ) {
                     $subQ->where('leader_status', 'approved')
-                         ->where('spv_status', 'approved')
+                         ->where('SPV_status', 'approved')
                          ->where('manager_status', 'pending');
                 })->orWhere('manager_approved_by', $user->id);
             });
@@ -68,7 +68,7 @@ class RequestController extends Controller
             'user', 
             'item', 
             'leaderApprover', 
-            'spvApprover', 
+            'SPVApprover', 
             'managerApprover'
         ])->findOrFail($id);
 
@@ -97,7 +97,7 @@ class RequestController extends Controller
             'quantity' => $request->quantity,
             'status' => 'pending',
             'leader_status' => 'pending',
-            'spv_status' => null,
+            'SPV_status' => null,
             'manager_status' => null,
         ]);
 
@@ -135,7 +135,7 @@ class RequestController extends Controller
                 'leader_status' => 'approved',
                 'leader_approved_by' => $user->id,
                 'leader_approved_at' => now(),
-                'spv_status' => 'pending', // Set SPV ke pending
+                'SPV_status' => 'pending', // Set SPV ke pending
             ]);
 
             $message = 'Request approved by Leader. Waiting for SPV approval.';
@@ -143,13 +143,13 @@ class RequestController extends Controller
         } elseif ($user->isSPV() && $requestModel->isPendingSPVApproval()) {
             // SPV Approval (Level 2)
             $requestModel->update([
-                'spv_status' => 'approved',
-                'spv_approved_by' => $user->id,
-                'spv_approved_at' => now(),
+                'SPV_status' => 'approved',
+                'SPV_approved_by' => $user->id,
+                'SPV_approved_at' => now(),
                 'manager_status' => 'pending', // Set Manager ke pending
             ]);
 
-            $message = 'Request approved by spv. Waiting for Manager approval.';
+            $message = 'Request approved by SPV. Waiting for Manager approval.';
 
         } elseif ($user->isManager() && $requestModel->isPendingManagerApproval()) {
             // Manager Approval (Level 3 - Final)
@@ -178,7 +178,7 @@ class RequestController extends Controller
                 'user', 
                 'item', 
                 'leaderApprover', 
-                'spvApprover', 
+                'SPVApprover', 
                 'managerApprover'
             ]),
         ]);
@@ -228,10 +228,10 @@ class RequestController extends Controller
         } elseif ($user->isSPV() && $requestModel->isPendingSPVApproval()) {
             // SPV Rejection
             $requestModel->update([
-                'spv_status' => 'rejected',
-                'spv_approved_by' => $user->id,
-                'spv_approved_at' => now(),
-                'spv_rejection_reason' => $request->rejection_reason,
+                'SPV_status' => 'rejected',
+                'SPV_approved_by' => $user->id,
+                'SPV_approved_at' => now(),
+                'SPV_rejection_reason' => $request->rejection_reason,
                 'status' => 'rejected',
                 'approved_by' => $user->id,
                 'approved_at' => now(),
@@ -269,7 +269,7 @@ class RequestController extends Controller
                 'user', 
                 'item', 
                 'leaderApprover', 
-                'spvApprover', 
+                'SPVApprover', 
                 'managerApprover'
             ]),
         ]);

@@ -20,11 +20,11 @@ class Request extends Model
         'leader_approved_at',
         'leader_rejection_reason',
         
-        // spv approval
-        'spv_status',
-        'spv_approved_by',
-        'spv_approved_at',
-        'spv_rejection_reason',
+        // SPV approval
+        'SPV_status',
+        'SPV_approved_by',
+        'SPV_approved_at',
+        'SPV_rejection_reason',
         
         // Manager approval
         'manager_status',
@@ -35,7 +35,7 @@ class Request extends Model
 
     protected $casts = [
         'leader_approved_at' => 'datetime',
-        'spv_approved_at' => 'datetime',
+        'SPV_approved_at' => 'datetime',
         'manager_approved_at' => 'datetime',
     ];
 
@@ -57,10 +57,10 @@ class Request extends Model
         return $this->belongsTo(User::class, 'leader_approved_by');
     }
 
-    // Relasi ke spv approver
-    public function spvApprover()
+    // Relasi ke SPV approver
+    public function SPVApprover()
     {
-        return $this->belongsTo(User::class, 'spv_approved_by');
+        return $this->belongsTo(User::class, 'SPV_approved_by');
     }
 
     // Relasi ke Manager approver
@@ -79,7 +79,7 @@ class Request extends Model
     {
         return $this->status === 'approved' && 
                $this->leader_status === 'approved' && 
-               $this->spv_status === 'approved' && 
+               $this->SPV_status === 'approved' && 
                $this->manager_status === 'approved';
     }
 
@@ -94,9 +94,9 @@ class Request extends Model
         return $this->leader_status === 'approved';
     }
 
-    public function isspvApproved()
+    public function isSPVApproved()
     {
-        return $this->spv_status === 'approved';
+        return $this->SPV_status === 'approved';
     }
 
     public function isManagerApproved()
@@ -111,18 +111,18 @@ class Request extends Model
                ($this->leader_status === 'pending' || $this->leader_status === null);
     }
 
-    public function isPendingspvApproval()
+    public function isPendingSPVApproval()
     {
         return $this->status === 'pending' && 
                $this->leader_status === 'approved' && 
-               ($this->spv_status === 'pending' || $this->spv_status === null);
+               ($this->SPV_status === 'pending' || $this->SPV_status === null);
     }
 
     public function isPendingManagerApproval()
     {
         return $this->status === 'pending' && 
                $this->leader_status === 'approved' && 
-               $this->spv_status === 'approved' && 
+               $this->SPV_status === 'approved' && 
                ($this->manager_status === 'pending' || $this->manager_status === null);
     }
 
@@ -132,8 +132,8 @@ class Request extends Model
         if (!$this->isLeaderApproved()) {
             return 'leader';
         }
-        if (!$this->isspvApproved()) {
-            return 'spv';
+        if (!$this->isSPVApproved()) {
+            return 'SPV';
         }
         if (!$this->isManagerApproved()) {
             return 'manager';
@@ -147,8 +147,8 @@ class Request extends Model
         if ($this->leader_status === 'rejected') {
             return $this->leader_rejection_reason;
         }
-        if ($this->spv_status === 'rejected') {
-            return $this->spv_rejection_reason;
+        if ($this->SPV_status === 'rejected') {
+            return $this->SPV_rejection_reason;
         }
         if ($this->manager_status === 'rejected') {
             return $this->manager_rejection_reason;
@@ -162,8 +162,8 @@ class Request extends Model
         if ($this->leader_status === 'rejected') {
             return 'Leader';
         }
-        if ($this->spv_status === 'rejected') {
-            return 'spv';
+        if ($this->SPV_status === 'rejected') {
+            return 'SPV';
         }
         if ($this->manager_status === 'rejected') {
             return 'Manager';

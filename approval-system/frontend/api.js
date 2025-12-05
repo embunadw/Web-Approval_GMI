@@ -1,4 +1,4 @@
-// api.js - PASTIKAN FILE INI LENGKAP!
+// api.js
 
 const API = {
     // Helper function for making API requests

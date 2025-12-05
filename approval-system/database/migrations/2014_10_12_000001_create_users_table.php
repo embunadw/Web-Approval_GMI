@@ -14,7 +14,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('password');
             // UPDATED: langsung include semua role dari awal
-            $table->enum('role', ['user', 'leader', 'spv', 'manager'])->default('user');
+            $table->enum('role', ['user', 'leader', 'SPV', 'manager'])->default('user');
             $table->timestamps();
         });
     }

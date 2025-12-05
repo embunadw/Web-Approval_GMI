@@ -25,11 +25,11 @@ return new class extends Migration
             $table->timestamp('leader_approved_at')->nullable();
             $table->text('leader_rejection_reason')->nullable();
             
-            // spv approval (Level 2)
-            $table->enum('spv_status', ['pending', 'approved', 'rejected'])->nullable();
-            $table->foreignId('spv_approved_by')->nullable()->constrained('users')->onDelete('set null');
-            $table->timestamp('spv_approved_at')->nullable();
-            $table->text('spv_rejection_reason')->nullable();
+            // SPV approval (Level 2)
+            $table->enum('SPV_status', ['pending', 'approved', 'rejected'])->nullable();
+            $table->foreignId('SPV_approved_by')->nullable()->constrained('users')->onDelete('set null');
+            $table->timestamp('SPV_approved_at')->nullable();
+            $table->text('SPV_rejection_reason')->nullable();
             
             // Manager approval (Level 3)
             $table->enum('manager_status', ['pending', 'approved', 'rejected'])->nullable();

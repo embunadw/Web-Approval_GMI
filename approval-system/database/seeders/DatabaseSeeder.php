@@ -46,15 +46,15 @@ class DatabaseSeeder extends Seeder
             'role' => 'leader',
         ]);
 
-        // Role: spv (Approval Level 2) 
+        // Role: SPV (Approval Level 2) - BARU
         User::create([
             'name' => 'SPV User',
-            'email' => 'spv@gmail.com',
+            'email' => 'SPV@gmail.com',
             'password' => Hash::make('123'),
-            'role' => 'spv',
+            'role' => 'SPV',
         ]);
 
-        // Role: Manager (Approval Level 3) 
+        // Role: Manager (Approval Level 3) - BARU
         User::create([
             'name' => 'Manager User',
             'email' => 'manager@gmail.com',
@@ -112,7 +112,7 @@ class DatabaseSeeder extends Seeder
         echo "- Staff: staff@gmail.com / 123\n";
         echo "- Staff2: staff2@gmail.com / 123\n";
         echo "- Leader: leader@gmail.com / 123\n";
-        echo "- spv: spv@gmail.com / 123\n";
+        echo "- SPV: SPV@gmail.com / 123\n";
         echo "- Manager: manager@gmail.com / 123\n";
         echo "=================================\n\n";
     }

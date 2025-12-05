@@ -232,7 +232,7 @@ async function viewDetail(id) {
             if (request.status === 'pending') {
                 detailHTML += `
                     <div class="current-level-info">
-                        <strong>Current Approval Level:</strong> ${getApprovalLevelBadge(currentLevel)}
+                        <strong>📍 Current Approval Level:</strong> ${getApprovalLevelBadge(currentLevel)}
                     </div>
                 `;
             }
@@ -248,11 +248,11 @@ async function viewDetail(id) {
             // Show rejection info if rejected
             if (request.status === 'rejected') {
                 const rejectionReason = request.leader_rejection_reason || 
-                                       request.spv_rejection_reason || 
+                                       request.SPV_rejection_reason || 
                                        request.manager_rejection_reason || 
                                        request.rejection_reason;
                 const rejectedBy = request.leader_status === 'rejected' ? 'Leader' :
-                                  request.spv_status === 'rejected' ? 'spv' :
+                                  request.SPV_status === 'rejected' ? 'SPV' :
                                   request.manager_status === 'rejected' ? 'Manager' : 'N/A';
                 
                 detailHTML += `
@@ -427,4 +427,4 @@ async function handleLogout() {
     }
 }
 
-console.log('✅ Dashboard.js loaded (Multi-level Approval)');
+console.log('Dashboard.js loaded (Multi-level Approval)');
